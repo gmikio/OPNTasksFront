@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { View, Image, TextInput, Button, Text, StyleSheet } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import React, {useState} from 'react';
+import {View, Image, TextInput, Button, Text, StyleSheet} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
 
 const LoginScreen = () => {
   const [inputIDN, setInputIDN] = useState('');
@@ -9,10 +9,10 @@ const LoginScreen = () => {
   const [isLoading, setIsLoading] = useState(false); // Adicione um estado para controlar o carregamento
   const navigation = useNavigation();
 
-  const handleIDNInputChange = (text) => {
+  const handleIDNInputChange = text => {
     setInputIDN(text);
   };
-  const handleUserNameInputChange = (text) => {
+  const handleUserNameInputChange = text => {
     setUsername(text);
   };
 
@@ -21,13 +21,16 @@ const LoginScreen = () => {
       // Inicie o indicador de carregamento
       setIsLoading(true);
 
-      const response = await fetch('http://tasks1-env.eba-tihfzwsy.us-east-1.elasticbeanstalk.com/api/Login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      const response = await fetch(
+        'http://tasks1-env.eba-tihfzwsy.us-east-1.elasticbeanstalk.com/api/Login',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({idn: inputIDN, userName: inputUserName}),
         },
-        body: JSON.stringify({ idn: inputIDN, userName: inputUserName }),
-      });
+      );
 
       if (response.ok) {
         const userInfo = await response.json();
@@ -37,13 +40,17 @@ const LoginScreen = () => {
         // Aguarde 1 segundo antes de redirecionar para a tela Home
         setTimeout(() => {
           setIsLoading(false); // Pare o indicador de carregamento
-          navigation.navigate('Home',{ animationType: 'Stacking', idn: inputIDN}); // Redirecione para a tela Home
+          navigation.navigate('Home', {
+            animationType: 'Stacking',
+            idn: inputIDN,
+          }); // Redirecione para a tela Home
         }, 1000);
       } else {
         setUsername('');
         setError('IDN não encontrado');
         setIsLoading(false); // Pare o indicador de carregamento
       }
+      // eslint-disable-next-line no-catch-shadow, no-shadow
     } catch (error) {
       console.error('Error:', error);
       setError('Erro na conexão com o servidor');
@@ -77,10 +84,16 @@ const LoginScreen = () => {
       <Button title="Login" onPress={handleLogin} disabled={isLoading} />
 
       {/* Display User IDN */}
-      {inputUserName && <Text style={[styles.userIdn, { color: 'black' }]}>Seu nome: {inputUserName}</Text>}
+      {/* {inputUserName && (
+        // eslint-disable-next-line react-native/no-inline-styles
+        <Text style={[styles.userIdn, {color: 'black'}]}>
+          Seu nome: {inputUserName}
+        </Text>
+      )} */}
 
       {/* Display Error Message */}
-      {error && <Text style={[styles.error, { color: 'red' }]}>{error}</Text>}
+      {/* eslint-disable-next-line react-native/no-inline-styles*/}
+      {error && <Text style={[styles.error, {color: 'red'}]}>{error}</Text>}
     </View>
   );
 };
@@ -93,7 +106,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   input: {
-    color: "black",
+    color: 'black',
     width: '100%',
     padding: 10,
     marginBottom: 10,
@@ -107,8 +120,8 @@ const styles = StyleSheet.create({
     height: '10%',
     marginBottom: 100,
   },
-  color: "black",
-    userIdn: {
+  color: 'black',
+  userIdn: {
     fontWeight: 'bold',
     marginTop: 10,
   },
@@ -118,4 +131,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default LoginScreen
+export default LoginScreen;
