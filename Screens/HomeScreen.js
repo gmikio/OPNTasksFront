@@ -49,18 +49,6 @@ const HomeScreen = ({navigation}) => {
     // setCurrentTask(randomTask);
   };
 
-  const completeTask = () => {
-    // Implement logic to complete the task (POST /api/Tasks/CompleteTask)
-    // After completing, clear the current task
-    setCurrentTask(null);
-  };
-
-  const cancelTask = () => {
-    // Implement logic to cancel the task (PUT /api/Tasks/CancelTask)
-    // After canceling, clear the current task
-    setCurrentTask(null);
-  };
-
   return (
     <View style={styles.container}>
       <TouchableOpacity
