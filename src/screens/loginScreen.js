@@ -2,9 +2,12 @@ import React, { useState } from 'react';
 import { View, Image, TextInput, Button, Text, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux'; // Import Redux hooks
-import { loginUser } from '../redux/actions/authActions'; // Import the loginUser action
+import loginUser from '../redux/actions/authActions';
 
-const loginScreen = () => {
+import logoMaior from '../assets/arts/logoMaior.png';
+import { current } from '@reduxjs/toolkit';
+
+const LoginScreen = () => {
   const [inputIDN, setInputIDN] = useState(null);
   const [inputUserName, setInputUserName] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -25,7 +28,6 @@ const loginScreen = () => {
     // Dispatch the loginUser action with the input values
     dispatch(loginUser(inputIDN, inputUserName))
       .then(() => {
-        setIsLoading(false);
         navigation.navigate('Home', {
           animationType: 'Stacking',
           idn: inputIDN,
@@ -40,7 +42,7 @@ const loginScreen = () => {
     <View style={styles.container}>
       <Image
         style={styles.logo}
-        source={require('../assets/arts/logoMaior.png')}
+        source={logoMaior}
         resizeMode="contain"
       />
       <TextInput
@@ -62,8 +64,7 @@ const loginScreen = () => {
       <Button title="Login" onPress={handleLogin} disabled={isLoading} />
 
       {/* Display Error Message */}
-      {error ? (<Text style={[styles.error, { color: 'red' }]}>{error}</Text>
-        ) : null}
+      {error ? (<Text style={[styles.error, { color: 'red' }]}>{error}</Text>) : null}
     </View>
   );
 };
@@ -96,4 +97,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default loginScreen;
+export default LoginScreen;

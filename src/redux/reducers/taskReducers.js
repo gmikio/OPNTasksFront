@@ -1,15 +1,11 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { createRandomTask } from '../actions/taskActions';
-import { completeTask } from '../actions/taskActions';
-import { viewUserCompletedTasks } from '../actions/taskActions';
-import { viewAllCompletedTasks } from '../actions/taskActions';
-import { cancelTask } from '../actions/taskActions';
-import { viewRanking } from '../actions/taskActions';
+import { createRandomTask, completeTask, viewUserCompletedTasks, viewAllCompletedTasks } from '../actions/taskActions';
+import { cancelTask, viewRanking } from '../actions/taskActions';
 
 const initialState = {
   currentTask: null,
-  isLoading: false,
   error: null,
+  isLoading: false,
 };
 
 const taskSlice = createSlice({
@@ -26,6 +22,7 @@ const taskSlice = createSlice({
         state.currentTask = action.payload;
         state.isLoading = false;
         state.error = null;
+        console.log("currentTask dentro do createRandomTask.fulfilled", state.currentTask)
       })
       .addCase(createRandomTask.rejected, (state, action) => {
         state.isLoading = false;
@@ -95,8 +92,9 @@ const taskSlice = createSlice({
       .addCase(viewRanking.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.error.message;
-      });
+      })
   },
 });
 
-export default taskSlice.reducer;
+const taskReducer = taskSlice.reducer;
+export default taskReducer

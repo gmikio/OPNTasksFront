@@ -1,4 +1,3 @@
-// actions/taskActions.js
 import { createAsyncThunk } from '@reduxjs/toolkit';
 
 // Define the async action creator
@@ -8,19 +7,31 @@ export const createRandomTask = createAsyncThunk(
     try {
       // API call here
       const response = await fetch(
-        `http://tasks1-env.eba-tihfzwsy.us-east-1.elasticbeanstalk.com/api/Tasks/CreateRandomTask?idn=${idn}`,
+        `http://tasks1-env.eba-tihfzwsy.us-east-1.elasticbeanstalk.com/api/Tasks/CreateRandomTask?idn=${idn.idn}`,
         {
           method: 'GET',
         }
       );
-
+      console.log("response =", response)
       if (response.ok) {
         const taskInfo = await response.json();
+        console.log("taskInfo = ", taskInfo);
+        console.log("product name", taskInfo.product.name)
+        console.log("product amount", taskInfo.amount)
+        console.log("institution", taskInfo.institution.name)
+        const respostaEstruturada = {
+          productName: taskInfo.product.name,
+          productAmount: taskInfo.amount,
+          institution: taskInfo.institution.name,
+        };
+        console.log("depois do console resposta estruturada");
+        console.log("resposta estruturada após API call:", respostaEstruturada);
+        console.log("depois do console resposta estruturada");
         return {
           productName: taskInfo.product.name,
           productAmount: taskInfo.amount,
-          instituition: taskInfo.instituition.name,
-        };
+          institution: taskInfo.institution.name,
+        }
       } else {
         // Handle error here
         throw new Error('Error generating task');

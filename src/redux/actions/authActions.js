@@ -1,5 +1,4 @@
-// actions/authActions.js
-export const login = (idn, userName) => {
+const login = (idn, userName) => {
   return async (dispatch) => {
     try {
       // Dispatch an action to set isLoading to true
@@ -17,13 +16,7 @@ export const login = (idn, userName) => {
         const userInfo = await response.json();
 
         // Dispatch an action to set the user info
-        dispatch({ type: 'SET_USER_INFO', payload: userInfo });
-
-        // Navigate to the Home screen
-        navigation.navigate('Home', {
-          animationType: 'Stacking',
-          idn: inputIDN,
-        });
+        dispatch({ type: 'SET_USER_INFO', payload: userInfo.name });
       } else {
         // Handle errors
         dispatch({ type: 'LOGIN_ERROR', payload: 'IDN not found' });
@@ -37,3 +30,5 @@ export const login = (idn, userName) => {
     }
   };
 };
+
+export default login;

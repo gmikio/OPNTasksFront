@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, Button, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
-import { useRoute } from '@react-navigation/native';
+import { View, Text, Button, StyleSheet, TouchableOpacity, ActivityIndicator, Modal } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { completeTask, cancelTask } from '../redux/actions/taskActions';
+import { createRandomTask } from '../redux/actions/taskActions'
 
 // Sidebar component
-const Sidebar = () => {
+const Sidebar = (idn) => {
   const dispatch = useDispatch();
 
   return (
@@ -42,8 +42,8 @@ const Task = ({ currentTask, idn }) => {
   if (currentTask) {
     return (
       <View style={styles.taskContainer}>
-        <Text style={styles.taskText}>{currentTask.product}</Text>
-        <Text style={styles.taskText}>{currentTask.quantity} units</Text>
+        <Text style={styles.taskText}>{currentTask.productName}</Text>
+        <Text style={styles.taskText}>{currentTask.productAmount} units</Text>
         <Text style={styles.taskText}>Deliver to: {currentTask.institution}</Text>
         <Button title="Complete Task" onPress={() => dispatch(completeTask(idn))} />
       </View>
@@ -54,27 +54,44 @@ const Task = ({ currentTask, idn }) => {
 };
 
 // Welcome component
-const Welcome = () => {
+const Welcome = (idn) => {
+  const dispatch = useDispatch();
+  const currentTask = useSelector(state => state.task.currentTask);
+
+const generateRandomTask = () => {
+  console.log("currentTask antes do dispatch", currentTask);
+  console.log("idn antes do dispatch", idn.idn);
+
+  // Dispatch the action and handle it when it's fulfilled
+  dispatch(createRandomTask(idn))
+    .then((resultAction) => {
+      if (resultAction.payload !== null) {
+        console.log("Received task data:", resultAction.payload);
+      } else {
+        console.log("Received null payload. Check your API response.");
+      }
+
+      console.log("currentTask depois do dispatch", currentTask);
+    })
+    .catch((error) => {
+      console.error("Error dispatching createRandomTask:", error);
+        });
+    };
+
   return (
     <>
       <Text style={styles.heading}>Bem vindo ao OPN Tasks!!</Text>
-      <Button style={styles.generateButton}
-        title="Generate Random Task"
-        onPress={() => {
-          // Dispatch an action to create a random task
-        }}
-      />
+      <Button style={styles.generateButton} title="Generate Random Task" onPress={generateRandomTask} />
     </>
   );
 };
 
-const homeScreen = ({ navigation }) => {
+const HomeScreen = ({ route, navigation }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const route = useRoute();
   const idn = route.params.idn;
 
   // Access Redux state using useSelector
-  const currentTask = useSelector(state => state.tasks.currentTask);
+  const currentTask = useSelector(state => state.task.currentTask);
 
   return (
     <View style={styles.container}>
@@ -84,10 +101,10 @@ const homeScreen = ({ navigation }) => {
         <Text style={styles.sidebarButtonText}>☰</Text>
       </TouchableOpacity>
 
-      {isSidebarOpen ? <Sidebar /> : null}
+      {isSidebarOpen ? <Sidebar idn={idn}/> : null}
 
       <View style={styles.mainContent}>
-        {currentTask ? <Task currentTask={currentTask} idn={idn} /> : <Welcome />}
+        {currentTask ? <Task currentTask={currentTask} idn={idn} /> : <Welcome idn={idn} />}
       </View>
     </View>
   );
@@ -134,4 +151,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default homeScreen;
+export default HomeScreen;
