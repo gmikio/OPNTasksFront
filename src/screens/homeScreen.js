@@ -3,49 +3,18 @@ import { View, Text, Button, StyleSheet, TouchableOpacity, ActivityIndicator, Mo
 import { useSelector, useDispatch } from 'react-redux';
 import { completeTask, cancelTask } from '../redux/actions/taskActions';
 import { createRandomTask } from '../redux/actions/taskActions'
-
-// Sidebar component
-const Sidebar = (idn) => {
-  const dispatch = useDispatch();
-
-  return (
-    <View style={styles.sidebar}>
-      <Button style={styles.sidebarButton}
-        title="View Completed Tasks"
-        onPress={() => {
-          // Navigate to a screen to view completed tasks
-        }}
-      />
-      <Button style={styles.sidebarButton}
-        title="View All Completed Tasks"
-        onPress={() => {
-          // Navigate to a screen to view all completed tasks
-        }}
-      />
-      <Button style={styles.sidebarButton}
-        title="Leaderboard"
-        onPress={() => {
-          // Navigate to a screen to view the leaderboard
-        }}      />
-      <Button style={styles.sidebarButton}
-        title="Cancel Current Task"
-        onPress={() => dispatch(cancelTask(idn))}
-      />
-    </View>
-  );
-};
+import CongratulationsModal from '../components/CongratulationsModal';
+import Sidebar from '../components/Sidebar';
 
 // Task component
 const Task = ({ currentTask, idn }) => {
-  const dispatch = useDispatch();
 
   if (currentTask) {
     return (
       <View style={styles.taskContainer}>
-        <Text style={styles.taskText}>{currentTask.productName}</Text>
-        <Text style={styles.taskText}>{currentTask.productAmount} units</Text>
-        <Text style={styles.taskText}>Deliver to: {currentTask.institution}</Text>
-        <Button title="Complete Task" onPress={() => dispatch(completeTask(idn))} />
+        <Text style={styles.taskText}>Leve: {currentTask.productName}</Text>
+        <Text style={styles.taskText}>{currentTask.productAmount} unidades</Text>
+        <Text style={styles.taskText}>para: {currentTask.institution}</Text>
       </View>
     );
   } else {
@@ -58,40 +27,61 @@ const Welcome = (idn) => {
   const dispatch = useDispatch();
   const currentTask = useSelector(state => state.task.currentTask);
 
-const generateRandomTask = () => {
-  console.log("currentTask antes do dispatch", currentTask);
-  console.log("idn antes do dispatch", idn.idn);
+  const generateRandomTask = () => {
 
-  // Dispatch the action and handle it when it's fulfilled
-  dispatch(createRandomTask(idn))
-    .then((resultAction) => {
-      if (resultAction.payload !== null) {
-        console.log("Received task data:", resultAction.payload);
-      } else {
-        console.log("Received null payload. Check your API response.");
-      }
+    // Dispatch the action and handle it when it's fulfilled
+    dispatch(createRandomTask(idn))
+        .then((resultAction) => {
+        if (resultAction.payload !== null) {
+            console.log("Received task data:", resultAction.payload);
+        } else {
+            console.log("Received null payload. Check your API response.");
+        }
 
-      console.log("currentTask depois do dispatch", currentTask);
-    })
-    .catch((error) => {
-      console.error("Error dispatching createRandomTask:", error);
-        });
+        console.log("currentTask depois do dispatch", currentTask);
+        })
+        .catch((error) => {
+        console.error("Error dispatching createRandomTask:", error);
+            });
     };
 
   return (
     <>
       <Text style={styles.heading}>Bem vindo ao OPN Tasks!!</Text>
-      <Button style={styles.generateButton} title="Generate Random Task" onPress={generateRandomTask} />
+      <Button style={styles.generateButton} title="Gerar nova tarefa" onPress={generateRandomTask} />
     </>
   );
 };
 
 const HomeScreen = ({ route, navigation }) => {
+  const dispatch = useDispatch();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isCongratulationsVisible, setIsCongratulationsVisible] = useState(false); // Manage modal visibility
   const idn = route.params.idn;
 
   // Access Redux state using useSelector
   const currentTask = useSelector(state => state.task.currentTask);
+
+  const handleCompleteTask = (idn) => {
+    // Dispatch the completeTask action here
+    dispatch(completeTask(idn))
+      .then(resultAction => {
+        if (resultAction.payload === null) {
+            console.log("resultAction.payload === null")
+            setIsCongratulationsVisible(true); // Show the modal on success
+        } else {
+          console.log('Received non-null payload. Handle it if needed.');
+        }
+      })
+      .catch(error => {
+        console.error('Error dispatching completeTask:', error);
+      });
+  };
+
+  const handleCloseCongratulations = () => {
+    setIsCongratulationsVisible(false); // Close the modal
+    // Dispatch an action to reset the currentTask here if needed
+  };
 
   return (
     <View style={styles.container}>
@@ -101,10 +91,15 @@ const HomeScreen = ({ route, navigation }) => {
         <Text style={styles.sidebarButtonText}>☰</Text>
       </TouchableOpacity>
 
-      {isSidebarOpen ? <Sidebar idn={idn}/> : null}
+      {isSidebarOpen ? <Sidebar idn={idn} /> : null}
 
       <View style={styles.mainContent}>
         {currentTask ? <Task currentTask={currentTask} idn={idn} /> : <Welcome idn={idn} />}
+        {currentTask ? 
+            <Button title="Completei a tarefa :)" onPress={() => handleCompleteTask(idn)} /> :
+            null}
+        {/* <Button title="Complete Task" onPress={handleCompleteTask} /> */}
+        <CongratulationsModal visible={isCongratulationsVisible} onClose={handleCloseCongratulations} />
       </View>
     </View>
   );
@@ -121,6 +116,12 @@ const styles = StyleSheet.create({
     padding: 15,
     justifyContent: 'flex-start',
   },
+  sidebarButton: {
+    backgroundColor: '#ccc',
+  },
+  sidebarButtonText: {
+    fontSize: 24,
+  },
   mainContent: {
     flex: 2,
     padding: 16,
@@ -131,14 +132,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginVertical: 16,
   },
-  sidebarButton: {
-    marginBottom: 8,
-    backgroundColor: '#ccc',
-  },
-  sidebarButtonText: {
-    fontSize: 24,
-  },
-  taskContainer: {
+   taskContainer: {
     alignItems: 'center',
   },
   taskText: {

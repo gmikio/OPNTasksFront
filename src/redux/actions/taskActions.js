@@ -12,21 +12,13 @@ export const createRandomTask = createAsyncThunk(
           method: 'GET',
         }
       );
-      console.log("response =", response)
       if (response.ok) {
         const taskInfo = await response.json();
-        console.log("taskInfo = ", taskInfo);
-        console.log("product name", taskInfo.product.name)
-        console.log("product amount", taskInfo.amount)
-        console.log("institution", taskInfo.institution.name)
         const respostaEstruturada = {
           productName: taskInfo.product.name,
           productAmount: taskInfo.amount,
           institution: taskInfo.institution.name,
         };
-        console.log("depois do console resposta estruturada");
-        console.log("resposta estruturada após API call:", respostaEstruturada);
-        console.log("depois do console resposta estruturada");
         return {
           productName: taskInfo.product.name,
           productAmount: taskInfo.amount,
@@ -57,7 +49,7 @@ export const completeTask = createAsyncThunk(
           },
         }
       );
-
+      console.log("response de completeTask =", response)
       if (response.ok) {
         return null; // Task cancellation was successful
       } else {

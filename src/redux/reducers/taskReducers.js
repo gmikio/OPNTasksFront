@@ -22,7 +22,6 @@ const taskSlice = createSlice({
         state.currentTask = action.payload;
         state.isLoading = false;
         state.error = null;
-        console.log("currentTask dentro do createRandomTask.fulfilled", state.currentTask)
       })
       .addCase(createRandomTask.rejected, (state, action) => {
         state.isLoading = false;
