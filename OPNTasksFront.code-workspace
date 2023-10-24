@@ -1,0 +1,12 @@
+{
+  "folders": [
+	{
+		"name": "OPNTasksFront",
+		"path": "."
+	}
+],
+  "settings": {
+    "java.compile.nullAnalysis.mode": "automatic",
+    "auto-rename-tag.activationOnLanguage": ["html", "xml", "php", "javascript"]
+  }
+}
